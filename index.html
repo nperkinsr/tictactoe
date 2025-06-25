@@ -20,9 +20,8 @@
 
   <h1>ONLINE TIC - TAC - TOE</h1>
 
-  <p class="centered-peer-id">
-    Your Peer ID: <span id="peerId">Generating...</span>
-    <i id="copyPeerId" class="bi bi-copy" style="cursor:pointer; display:none;" title="Copy Peer ID"></i>
+  <p class="centered-peer-id" id="peerIdSection">
+    If you are hosting: <button id="generatePeerIdBtn">Generate Peer ID</button>
   </p>
   <button onclick="startGame()">Host Game</button>
   <input type="text" id="peerInput" placeholder="Enter opponent ID">
@@ -43,7 +42,6 @@
 
 
   <script src="./scripts.js"></script>
-  <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
 </body>
 
 </html>

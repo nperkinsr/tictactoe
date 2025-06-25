@@ -79,6 +79,13 @@ button:hover {
   border: 1px solid var(--black);
 }
 
+.disabled {
+  background-color: #cccccc;
+  color: #666666;
+  border: 1px solid #cccccc;
+  cursor: not-allowed;
+}
+
 input {
   text-align: center;
   height: 2rem;
@@ -108,4 +115,8 @@ input::placeholder {
 
 .bi-copy {
   font-size: 1.1rem;
+}
+
+#generatePeerIdBtn {
+  width: 200px;
 }

@@ -1,30 +1,4 @@
-// Generate a short ID for the PeerJS connection
-function generateShortId(length = 8) {
-  const chars =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let id = "";
-  for (let i = 0; i < length; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return id;
-}
-
-const myPeerId = generateShortId();
-const peer = new Peer(myPeerId); // Use your custom 8-char ID
-
-peer.on("open", (id) => {
-  document.getElementById("peerId").textContent = id; // Show the custom ID
-  document.getElementById("copyPeerId").style.display = "inline";
-  document.getElementById("copyPeerId").onclick = function () {
-    navigator.clipboard.writeText(id);
-    this.title = "Copied!";
-    setTimeout(() => {
-      this.title = "Copy Peer ID";
-    }, 1000);
-  };
-});
-
-let conn, playerSymbol; //Conn holds PeerJS connection and playerSymbol stores whether the player is "X" or "O" in the game
+let peer, myPeerId, conn, playerSymbol;
 const status = document.getElementById("status");
 let currentTurn = "X";
 
@@ -38,6 +12,49 @@ const winPatterns = [
   [0, 4, 8],
   [2, 4, 6], // diags
 ];
+
+// Generate a short ID for the PeerJS connection
+function generateShortId(length = 8) {
+  const chars =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let id = "";
+  for (let i = 0; i < length; i++) {
+    id += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return id;
+}
+
+// Host: Generate Peer ID on button click
+document.getElementById("generatePeerIdBtn").onclick = function () {
+  myPeerId = generateShortId();
+  peer = new Peer(myPeerId);
+
+  // Replace button with Peer ID and copy icon
+  document.getElementById("peerIdSection").innerHTML = `
+    Your Peer ID: <span id="peerId">${myPeerId}</span>
+    <i id="copyPeerId" class="bi bi-copy" style="cursor:pointer;" title="Copy Peer ID"></i>
+  `;
+
+  document.getElementById("copyPeerId").onclick = function () {
+    navigator.clipboard.writeText(myPeerId);
+    this.title = "Copied!";
+    setTimeout(() => {
+      this.title = "Copy Peer ID";
+    }, 1000);
+  };
+
+  peer.on("open", (id) => {
+    // Optionally, update the displayed ID if PeerJS changes it
+    document.getElementById("peerId").textContent = id;
+  });
+
+  peer.on("connection", (connection) => {
+    conn = connection;
+    conn.on("data", handleMove);
+    status.textContent = "Opponent connected! Your turn.";
+    playerSymbol = "X";
+  });
+};
 
 // Generate and display the player's Peer ID
 
@@ -185,6 +202,28 @@ function restartGame() {
       : "Connected! Waiting for opponent's move...";
 }
 
+const peerInput = document.getElementById("peerInput");
+const joinBtn = document.querySelector('button[onclick="joinGame()"]');
+
+// Function to update disabled state and class
+function updateJoinBtnState() {
+  // This will only count real input, not the placeholder
+  // console.log('Input value:', peerInput.value, 'Length:', peerInput.value.length);
+  if (peerInput.value.length !== 8) {
+    joinBtn.disabled = true;
+    joinBtn.classList.add("disabled");
+  } else {
+    joinBtn.disabled = false;
+    joinBtn.classList.remove("disabled");
+  }
+}
+
+// Initial state on page load
+updateJoinBtnState();
+
+// Listen for input changes
+peerInput.addEventListener("input", updateJoinBtnState);
+
 // Set cell onclicks on page load
 window.onload = () => {
   document.querySelectorAll(".cell").forEach((cell) => {
@@ -192,4 +231,7 @@ window.onload = () => {
       makeMove(Number(cell.dataset.index));
     };
   });
+
+  // Ensure join button is disabled and styled on load if input is empty or not 8 chars
+  updateJoinBtnState();
 };
