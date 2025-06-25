@@ -79,11 +79,22 @@ button:hover {
   border: 1px solid var(--black);
 }
 
-.disabled {
+button.disabled {
   background-color: #cccccc;
   color: #666666;
   border: 1px solid #cccccc;
-  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  border: 1px solid #cccccc;
+  opacity: 0.6;
+}
+
+button[disabled] {
+  pointer-events: none;
 }
 
 input {

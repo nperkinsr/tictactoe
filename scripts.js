@@ -35,6 +35,7 @@ document.getElementById("generatePeerIdBtn").onclick = function () {
     <i id="copyPeerId" class="bi bi-copy" style="cursor:pointer;" title="Copy Peer ID"></i>
   `;
 
+  // Set the copy handler after DOM update
   document.getElementById("copyPeerId").onclick = function () {
     navigator.clipboard.writeText(myPeerId);
     this.title = "Copied!";
@@ -44,7 +45,6 @@ document.getElementById("generatePeerIdBtn").onclick = function () {
   };
 
   peer.on("open", (id) => {
-    // Optionally, update the displayed ID if PeerJS changes it
     document.getElementById("peerId").textContent = id;
   });
 
@@ -56,38 +56,27 @@ document.getElementById("generatePeerIdBtn").onclick = function () {
   });
 };
 
-// Generate and display the player's Peer ID
-
-document.getElementById("copyPeerId").onclick = function () {
-  const id = document.getElementById("peerId").textContent;
-  navigator.clipboard.writeText(id);
-  this.title = "Copied!";
-  setTimeout(() => {
-    this.title = "Copy Peer ID";
-  }, 1000);
-};
-
 // Function to host a game
 function startGame() {
-  playerSymbol = "X"; // Host always plays as X
+  playerSymbol = "X";
   status.textContent = "Waiting for opponent to connect...";
+  document.getElementById("peerInput").disabled = true;
 
-  // Wait for an opponent to connect
   peer.on("connection", (connection) => {
     conn = connection;
-    conn.on("data", handleMove); // Listen for opponent's moves
+    conn.on("data", handleMove);
     status.textContent = "Opponent connected! Your turn.";
   });
 }
 
 // Function to join a game
 function joinGame() {
-  const peerId = document.getElementById("peerInput").value; // Get opponent's ID
+  const peerId = document.getElementById("peerInput").value;
   conn = peer.connect(peerId);
 
   conn.on("open", () => {
-    playerSymbol = "O"; // Joining player is always O
-    conn.on("data", handleMove); // Listen for moves from opponent
+    playerSymbol = "O";
+    conn.on("data", handleMove);
     status.textContent = "Connected! Waiting for opponent's move...";
   });
 }
@@ -111,7 +100,6 @@ function handleMove(data) {
   status.textContent =
     currentTurn === playerSymbol ? "Your turn!" : "Opponent's turn...";
 
-  // Check for win/draw after opponent's move
   const result = checkWinner();
   if (result) endGame(result);
 }
@@ -119,14 +107,8 @@ function handleMove(data) {
 // Function to make a move
 function makeMove(index) {
   const cell = document.querySelector(`.cell[data-index="${index}"]`);
-  if (cell.innerHTML !== "") return; // Already taken
+  if (cell.innerHTML !== "" || currentTurn !== playerSymbol) return;
 
-  // Ensure it's the player's turn
-  if (currentTurn !== playerSymbol) {
-    return;
-  }
-
-  // Mark the cell with the player's symbol and style
   if (playerSymbol === "X") {
     cell.innerHTML = '<i class="bi bi-x"></i>';
     cell.classList.add("x");
@@ -136,16 +118,13 @@ function makeMove(index) {
   }
   cell.classList.add("taken");
 
-  // Send move data to opponent
   if (conn) {
     conn.send({ index, symbol: playerSymbol });
   }
 
-  // Update turn and status
   currentTurn = playerSymbol === "X" ? "O" : "X";
   status.textContent = "Opponent's turn...";
 
-  // Check for win/draw after your move
   const result = checkWinner();
   if (result) endGame(result);
 }
@@ -202,29 +181,7 @@ function restartGame() {
       : "Connected! Waiting for opponent's move...";
 }
 
-const peerInput = document.getElementById("peerInput");
-const joinBtn = document.querySelector('button[onclick="joinGame()"]');
-
-// Function to update disabled state and class
-function updateJoinBtnState() {
-  // This will only count real input, not the placeholder
-  // console.log('Input value:', peerInput.value, 'Length:', peerInput.value.length);
-  if (peerInput.value.length !== 8) {
-    joinBtn.disabled = true;
-    joinBtn.classList.add("disabled");
-  } else {
-    joinBtn.disabled = false;
-    joinBtn.classList.remove("disabled");
-  }
-}
-
-// Initial state on page load
-updateJoinBtnState();
-
-// Listen for input changes
-peerInput.addEventListener("input", updateJoinBtnState);
-
-// Set cell onclicks on page load
+// Set cell onclicks and manage join button state on page load
 window.onload = () => {
   document.querySelectorAll(".cell").forEach((cell) => {
     cell.onclick = function () {
@@ -232,6 +189,23 @@ window.onload = () => {
     };
   });
 
-  // Ensure join button is disabled and styled on load if input is empty or not 8 chars
+  const peerInput = document.getElementById("peerInput");
+  const joinBtn = document.querySelector('button[onclick="joinGame()"]');
+
+  function updateJoinBtnState() {
+    const isValid = peerInput.value.length === 8;
+    joinBtn.disabled = !isValid;
+    if (!isValid) {
+      joinBtn.classList.add("disabled");
+    } else {
+      joinBtn.classList.remove("disabled");
+    }
+  }
+
+  peerInput.addEventListener("input", updateJoinBtnState);
+  peerInput.addEventListener("paste", () => {
+    setTimeout(updateJoinBtnState, 0);
+  });
+
   updateJoinBtnState();
 };
