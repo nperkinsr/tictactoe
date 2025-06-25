@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>TIC TAC TOE</title>
-  <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
   <link rel=" stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,11 +21,13 @@
   <h1>ONLINE TIC - TAC - TOE</h1>
 
   <p class="centered-peer-id" id="peerIdSection">
-    If you are hosting: <button id="generatePeerIdBtn">Generate Peer ID</button>
+    Your Peer ID: <span id="peerId"></span>
+    <i id="copyPeerId" class="bi bi-copy" style="cursor:pointer;" title="Copy Peer ID"></i>
   </p>
   <button onclick="startGame()">Host Game</button>
   <input type="text" id="peerInput" placeholder="Enter opponent ID">
-  <button onclick="joinGame()" disabled>Join Game</button>
+  <button onclick="joinGame()">Join Game</button>
+  <h3>WELCOME</h3>
 
   <div class="board" id="board">
     <div class="cell" data-index="0" onclick="makeMove(0)"></div>
@@ -39,7 +41,6 @@
     <div class="cell" data-index="8" onclick="makeMove(8)"></div>
   </div>
   <p id="status">Waiting for opponent...</p>
-
 
   <script src="./scripts.js"></script>
 </body>
