@@ -1,0 +1,111 @@
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --color1: #ff8e43;
+  --color2: #77b6bb;
+}
+
+body {
+  text-align: center;
+  font-family: "Nunito", sans-serif;
+  background-color: #f4f4f4;
+}
+
+h1 {
+  background-color: var(--black);
+  color: white;
+  padding: 2rem;
+  margin-top: 0;
+}
+
+ol {
+  text-align: left;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 150px);
+  grid-gap: 25px;
+  margin: 30px auto;
+  place-content: center;
+  width: fit-content;
+}
+
+.cell {
+  width: 150px;
+  height: 150px;
+  font-size: 2em;
+  text-align: center;
+  line-height: 150px;
+  background: var(--color2);
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.cell.taken {
+  cursor: not-allowed;
+  font-weight: bold;
+}
+
+.cell i {
+  color: #fff;
+  font-size: 4rem;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.cell.x {
+  background: #ce6353; /* red */
+}
+
+.cell.o {
+  background: #e4a756; /* yellow */
+}
+
+button {
+  border: none;
+  height: 2.4rem;
+  width: 8rem;
+  margin: 1rem;
+  border-radius: 5px;
+  background-color: var(--black);
+  color: white;
+  transition: background-color 200ms ease-in-out, box-shadow 200ms ease-in-out;
+}
+
+button:hover {
+  background-color: var(--white);
+  color: var(--black);
+  border: 1px solid var(--black);
+}
+
+input {
+  text-align: center;
+  height: 2rem;
+  border-radius: 5px;
+  border: 1px solid var(--black);
+}
+
+input::placeholder {
+  color: gainsboro;
+  padding: 10px;
+}
+
+#peerId {
+  font-family: "Nunito", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color1);
+}
+
+.centered-peer-id {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  margin: 2em 0;
+}
+
+.bi-copy {
+  font-size: 1.1rem;
+}
